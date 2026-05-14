@@ -1,11 +1,13 @@
 resource "aws_instance" "website_server" {
-  ami                    = "ami-0b016c703b95ecbe4" #Amazon Linux 2 AMI
-  instance_type          = "t2.micro"
-  key_name               = "chave-site-prod"
-  vpc_security_group_ids = [aws_security_group.website_sg.id]
-  iam_instance_profile   = "ECR-EC2-Role"
+  
+  ami                    = "ami-094860656b50c0c5d" #Verificar na imagem da aws
+  instance_type          = "t3.micro"
+  key_name               = "minhachave"
+  vpc_security_group_ids =  [aws_security_group.website_sg2.id]
+  iam_instance_profile = "infra"
 
-  tags = {
+  
+    tags = {
     Name        = "website-server"
     Provisioned = "Terraform"
     Cliente     = "Maria"
@@ -13,26 +15,27 @@ resource "aws_instance" "website_server" {
 }
 
 ## Security Group
-resource "aws_security_group" "website_sg" {
-  name   = "website-sg"
-  vpc_id = "vpc-0ff60a695425883cf"
-  tags = {
-    Name        = "website-sg"
+resource "aws_security_group" "website_sg2" {
+  name   = "website-sg2"
+  vpc_id = "vpc-0ddeca3a9898772f3" #Criar na aws
+   
+    tags = {
+    Name        = "website-sg2"
     Provisioned = "Terraform"
     Cliente     = "Maria"
   }
 }
 
 resource "aws_vpc_security_group_ingress_rule" "allow_ssh" {
-  security_group_id = aws_security_group.website_sg.id
-  cidr_ipv4         = "seu-ip/32"
+  security_group_id = aws_security_group.website_sg2.id
+  cidr_ipv4         = "220.172.5.243/32" #verificar seu IP na instancia da aws
   from_port         = 22
   ip_protocol       = "tcp"
   to_port           = 22
 }
 
 resource "aws_vpc_security_group_ingress_rule" "allow_http" {
-  security_group_id = aws_security_group.website_sg.id
+  security_group_id = aws_security_group.website_sg2.id
   cidr_ipv4         = "0.0.0.0/0"
   from_port         = 80
   ip_protocol       = "tcp"
@@ -40,7 +43,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_http" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "allow_https" {
-  security_group_id = aws_security_group.website_sg.id
+  security_group_id = aws_security_group.website_sg2.id
   cidr_ipv4         = "0.0.0.0/0"
   from_port         = 443
   ip_protocol       = "tcp"
@@ -48,7 +51,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_https" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "allow_all_outbound" {
-  security_group_id = aws_security_group.website_sg.id
+  security_group_id = aws_security_group.website_sg2.id
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = -1
