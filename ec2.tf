@@ -2,7 +2,7 @@ resource "aws_instance" "website_server" {
   
   ami                    = "ami-094860656b50c0c5d" #Verificar na imagem da aws
   instance_type          = "t3.micro"
-  key_name               = "minhachave"
+  key_name               = "key"
   vpc_security_group_ids =  [aws_security_group.website_sg2.id]
   iam_instance_profile = "infra"
 
@@ -28,7 +28,8 @@ resource "aws_security_group" "website_sg2" {
 
 resource "aws_vpc_security_group_ingress_rule" "allow_ssh" {
   security_group_id = aws_security_group.website_sg2.id
-  cidr_ipv4         = "220.172.5.243/32" #verificar seu IP na instancia da aws
+  cidr_ipv4         = "220.172.5.243/32"
+   #verificar seu IP na instancia da aws
   from_port         = 22
   ip_protocol       = "tcp"
   to_port           = 22
