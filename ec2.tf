@@ -12,7 +12,7 @@ resource "aws_instance" "website_server" {
     Provisioned = "Terraform"
     Cliente     = "Maria"
   }
-}
+} 
 
 ## Security Group
 resource "aws_security_group" "website_sg2" {
