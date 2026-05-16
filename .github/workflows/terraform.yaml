@@ -23,13 +23,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: "Configure AWS Credentials" # verificar no marketplace aws credencial
-        uses: aws-actions/configure-aws-credentials@v6.1.1 # // // // //
-       
+      
+      - name: "Configure AWS Credentials" Action for GitHub Actions
+        uses: aws-actions/configure-aws-credentials@v6.1.1
+        
         with:
-          aws-region: us-east-2 #verificar aws credentials no aws marketplace >> github action workflows
+          
           role-to-assume: arn:aws:iam::461546078282:role/infra #verificar aws credentials no aws marketplace >> github action workflows
+          aws-region: us-east-2 
 
       - name: HashiCorp - Setup Terraform
         uses: hashicorp/setup-terraform@v3
