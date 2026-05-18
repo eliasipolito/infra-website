@@ -24,9 +24,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       
-      - name: "Configure AWS Credentials" 
+      - name: "Configure AWS Credentials" Action for GitHub Actions
         uses: aws-actions/configure-aws-credentials@v6.1.1
-        
         with:
           
           role-to-assume: arn:aws:iam::461546078282:role/githubaction #verificar aws credentials no aws marketplace >> github action workflows
