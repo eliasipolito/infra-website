@@ -29,7 +29,7 @@ jobs:
         
         with:
           
-          role-to-assume: arn:aws:iam::461546078282:role/infra #verificar aws credentials no aws marketplace >> github action workflows
+          role-to-assume: arn:aws:iam::461546078282:role/githubaction #verificar aws credentials no aws marketplace >> github action workflows
           aws-region: us-east-2 
 
       - name: HashiCorp - Setup Terraform
@@ -43,4 +43,18 @@ jobs:
 
       - name: Terraform Plan
         run: terraform plan -out=tfplan.tfout
+
+     - name: Terraform Apply
+      run: terraform apply -out=tfplan.tfout
+      if: github.event.inputs.apply == 'true'
+
+     - name: Plan Destroy
+        run: terraform plan -destroy -out=tfplan.tfout
+        if: github.event.plan_destroy == 'true'
+
+
+     - name: Terraform Destroy
+        run: terraform apply -destroy -auto-approve tfplan.tfout
         if: github.event.inputs.destroy == 'true'
+
+
