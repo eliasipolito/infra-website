@@ -44,16 +44,16 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -out=tfplan.tfout
 
-     - name: Terraform Apply
-      run: terraform apply -out=tfplan.tfout
-      if: github.event.inputs.apply == 'true'
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan.tfout
+        if: github.event.inputs.apply == 'true'
 
-     - name: Plan Destroy
+      - name: Plan Destroy
         run: terraform plan -destroy -out=tfplan.tfout
-        if: github.event.plan_destroy == 'true'
+        if: github.event.inputs.plan_destroy == 'true'
 
 
-     - name: Terraform Destroy
+      - name: Terraform Destroy
         run: terraform apply -destroy -auto-approve tfplan.tfout
         if: github.event.inputs.destroy == 'true'
 
