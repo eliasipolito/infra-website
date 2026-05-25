@@ -4,7 +4,7 @@ resource "aws_instance" "webserver" {
   key_name   = "chavekey.pem"
  vpc_security_group_ids = [aws_security_group.website.id]
   iam_instance_profile = "infra"
-  user_data = file["user_data.sh"]
+  user_data = file("user_data.sh")
 
 tags = {
   Name = "webserver"
