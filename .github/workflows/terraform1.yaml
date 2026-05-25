@@ -1,0 +1,83 @@
+name: "Terraform CI/CD"
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Executar terraform apply?'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      plan_destroy:
+        description: 'Gerar plano de destruição (Plan Destroy)?'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      destroy:
+        description: 'Executar terraform destroy?'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+permissions:
+  id-token: write # Required for requesting the JWT (OIDC)
+  contents: read # Required for actions/checkout
+
+jobs:
+  terraform: 
+    name: Terraform
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: "Configure AWS Credentials"   
+        uses: aws-actions/configure-aws-credentials@v4  
+        with:  
+          role-to-assume: arn:aws:iam::461546078282:role/githubaction  
+          aws-region: us-east-2   
+
+      - name: HashiCorp - Setup Terraform  
+        uses: hashicorp/setup-terraform@v3  
+        with:
+          terraform_wrapper: false
+    
+      - name: Terraform Init  
+        run: terraform init  
+    
+      - name: Terraform Validate  
+        run: terraform validate  
+
+      # --- DEPLOYMENT FLUID ---
+      - name: Terraform Plan  
+        if: ${{ inputs.plan_destroy != 'true' && inputs.destroy != 'true' }}
+        run: terraform plan -out=tfplan.tfout  
+
+      - name: Terraform Apply  
+        if: ${{ inputs.apply == 'true' && inputs.plan_destroy != 'true' && inputs.destroy != 'true' }}
+        run: terraform apply -auto-approve tfplan.tfout  
+
+      # --- DESTROY FLUID ---
+      - name: Plan Destroy  
+        if: ${{ inputs.plan_destroy == 'true' }}
+        run: terraform plan -destroy -out=tfdestroy.tfout  
+
+      # Correção Lógica: Agora o destroy usa o plano gerado na etapa anterior se ele existir
+      - name: Terraform Destroy  
+        if: ${{ inputs.destroy == 'true' }}
+        run: |
+          if [ -f tfdestroy.tfout ]; then
+            terraform apply -auto-approve tfdestroy.tfout
+          else
+            terraform destroy -auto-approve
+          fi
