@@ -1,7 +1,7 @@
 resource "aws_instance" "webserver" {
   ami                    = "ami-00a9f44477dd83e3d"
   instance_type          = "t3.micro"
-  key_name               = "chavekey"
+  key_name               = "chavekey.pem"
   vpc_security_group_ids = [aws_security_group.website1.id]
   iam_instance_profile   = "infra"
   user_data              = file("user_data.sh")
